@@ -1,8 +1,15 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  queryAllByTestId,
+  render,
+  screen,
+  userEvent,
+  waitFor,
+} from "@testing-library/react";
 
 import App from "./App";
 import { fetchShow as mockFetchShow } from "./api/fetchShow";
+import { mockData } from "./mockData";
 
 jest.mock("./api/fetchShow");
 
@@ -12,12 +19,13 @@ test("should render without error", () => {
 
 test("should fetch and render mission data", async () => {
   render(<App />);
-  mockFetchShow.mockResolvedValueOnce({
-    data: [{ id: 1, name: "Stranger Things", summary: "blah blah blah" }],
-  });
+  mockFetchShow.mockResolvedValueOnce(mockData);
 
   await waitFor(() => {
-    const summary = screen.getByText(/blah blah blah/i);
-    expect(summary).toBeInTheDocument();
+    const dropdown = screen.getByText(/select a season/i);
+    userEvent.click(dropdown);
+    const seasonOne = screen.getByText(/season 1/i);
+    userEvent.click(seasonOne);
+    expect(screen.queryAllByTestId("episode")).toHaveLength(2);
   });
 });
