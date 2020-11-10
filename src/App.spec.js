@@ -3,9 +3,10 @@ import {
   queryAllByTestId,
   render,
   screen,
-  userEvent,
+  fireEvent,
   waitFor,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import App from "./App";
 import { fetchShow as mockFetchShow } from "./api/fetchShow";
@@ -18,14 +19,16 @@ test("should render without error", () => {
 });
 
 test("should fetch and render mission data", async () => {
-  render(<App />);
   mockFetchShow.mockResolvedValueOnce(mockData);
+  render(<App />);
+
+  const dropdown = await screen.findByText(/select a season/i);
+  userEvent.click(dropdown);
+  const season = await screen.findByText(/season 1/i);
+  userEvent.click(season);
 
   await waitFor(() => {
-    const dropdown = screen.getByText(/select a season/i);
-    userEvent.click(dropdown);
-    const seasonOne = screen.getByText(/season 1/i);
-    userEvent.click(seasonOne);
-    expect(screen.queryAllByTestId("episode")).toHaveLength(2);
+    const episodesCards = screen.findAllByTestId("episode");
+    expect(episodesCards).toHaveLength(2);
   });
 });
