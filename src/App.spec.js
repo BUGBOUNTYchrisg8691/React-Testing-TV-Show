@@ -8,10 +8,6 @@ import { mockData } from "./mockData";
 
 jest.mock("./api/fetchShow");
 
-test("should render without error", () => {
-  render(<App />);
-});
-
 test("should fetch and render mission data", async () => {
   mockFetchShow.mockResolvedValueOnce(mockData);
   render(<App />);
@@ -22,7 +18,7 @@ test("should fetch and render mission data", async () => {
   userEvent.click(season);
 
   await waitFor(() => {
-    const episodesCards = screen.findAllByTestId("episode");
-    expect(episodesCards).toHaveLength(2);
+    const episodesCards = screen.getAllByTestId("episode");
+    expect(episodesCards).toHaveLength(8);
   });
 });
